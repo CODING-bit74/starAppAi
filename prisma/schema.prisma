@@ -1,0 +1,347 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Custom Role Field
+  role          String    @default("user") // "admin" or "user"
+  password      String?   // Hashed password for credentials auth
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? 
+  access_token       String? 
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? 
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Application Models
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  category    String
+  description String
+  content     String   // HTML content
+  tags        String   // JSON string or comma-separated
+  demoUrl     String?
+  repoUrl     String?
+  demoConfig  String?  // JSON string
+  repoData    String?  // JSON string
+  
+  // Stats
+  stars       Int      @default(0)
+  forks       Int      @default(0)
+  watching    Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  content     String   // HTML content
+  coverImage  String?
+  author      String
+  category    String
+  readTime    String
+  published   Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  company   String?
+  message   String
+  status    String   @default("new") // new, contacted, closed
+
+  createdAt DateTime @default(now())
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  department  String
+  location    String
+  type        String   // Full-time, Contract, etc.
+  description String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  applications Application[]
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  jobId     String
+  name      String
+  email     String
+  resumeUrl String   // Link to resume (e.g. Doc/Drive/LinkedIn)
+  coverLetter String?
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model ContactInfo {
+  id          String   @id @default(cuid())
+  email       String   @default("contact@starapp.ai")
+  phone       String   @default("+1 (555) 123-4567")
+  address     String   @default("123 Innovation Drive, Tech City, TC 94000")
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model Doc {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String
+  category    String   // e.g. "Getting Started", "API Reference"
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PricingPlan {
+  id          String   @id @default(cuid())
+  name        String
+  price       Float
+  currency    String   @default("USD")
+  interval    String   // month, year, one-time
+  features    String   // JSON string of features
+  popular     Boolean  @default(false)
+  
+  orders      Order[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  userId      String?  // Optional: can be guest checkout initially
+  planId      String
+  amount      Float
+  currency    String
+  status      String   @default("pending") // pending, paid, failed
+  paymentMethod String // card, upi, etc.
+  
+  // Guest details if not logged in
+  customerName  String?
+  customerEmail String?
+  
+  plan        PricingPlan @relation(fields: [planId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SystemStats {
+  id                    String   @id @default(cuid())
+  activeUsers           String   @default("50K+")
+  transactionsProcessed String   @default("$2B+")
+  aiPredictions         String   @default("10M+")
+  uptimeGuarantee       String   @default("99.9%")
+  countriesServed       String   @default("150+")
+  clientRetention       String   @default("98%")
+  globalSupport         String   @default("24/7")
+  
+  updatedAt             DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+}
+
+model AboutInfo {
+  id          String   @id @default(cuid())
+  title       String   @default("About StarApp.AI")
+  description String   @default("Founded in 2024, StarApp.AI is on a mission to democratize autonomous agent technology for the enterprise. We believe that the future of work is collaborative—between humans and intelligent agents.")
+  
+  stat1Value  String   @default("15+")
+  stat1Label  String   @default("Countries Served")
+  
+  stat2Value  String   @default("98%")
+  stat2Label  String   @default("Client Retention")
+  
+  stat3Value  String   @default("24/7")
+  stat3Label  String   @default("Global Support")
+  
+  twitterUrl  String?
+  githubUrl   String?
+  linkedinUrl String?
+
+  updatedAt   DateTime @updatedAt
+}
+
+model CaseStudy {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  slug        String   @unique
+  description String
+  content     String   // Full details (rich text/HTML)
+  result      String   // e.g. "Reduced audit time by 75%"
+  metric      String   // e.g. "75%"
+  
+  // Optional: Add category or tags if needed later
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String   // Lucide icon name
+  color       String   // Tailwind color class
+  order       Int      @default(0)
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model Solution {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  icon        String   // Lucide icon name
+  content     String   // HTML content
+  features    String   // JSON string of features
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LegalDoc {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String
+  updatedAt DateTime @updatedAt
+}
+
+model CTA {
+  id          String   @id @default(cuid())
+  title       String   @default("Ready to transform your business?")
+  description String   @default("Join 500+ enterprises leveraging our AI and Blockchain infrastructure to build the future.")
+  
+  buttonText  String   @default("Get Started Now")
+  buttonLink  String   @default("/pricing")
+  
+  secondaryButtonText String @default("Contact Us")
+  secondaryButtonLink String @default("/contact")
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model HeroCard {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String   // Lucide icon name
+  order       Int      @default(0)
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model PageContent {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  subtitle    String?
+  description String?
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model BotKnowledge {
+  id        String   @id @default(cuid())
+  topic     String
+  content   String   // The answer or info snippet
+  keywords  String?  // Comma-separated keywords
+  active    Boolean  @default(true)
+  
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model BotSuggestion {
+  id        String   @id @default(cuid())
+  text      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
