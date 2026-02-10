@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
@@ -17,7 +18,9 @@ import {
     LayoutTemplate,
     MessageSquare,
     CheckSquare,
-    Lightbulb
+    Lightbulb,
+    LogOut,
+    HelpCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -39,6 +42,7 @@ const adminItems = [
     { label: "About Section", icon: Info, href: "/admin/about" },
     { label: "Hero Cards", icon: LayoutTemplate, href: "/admin/hero" },
     { label: "CTA Section", icon: Megaphone, href: "/admin/cta" },
+    { label: "FAQs", icon: HelpCircle, href: "/admin/faqs" },
     { label: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
@@ -57,7 +61,7 @@ export function AdminSidebar() {
                     </span>
                 </Link>
             </div>
-            <nav className="flex-1 space-y-1 px-4">
+            <nav className="flex-1 space-y-1 px-4 overflow-y-auto">
                 {adminItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -77,7 +81,16 @@ export function AdminSidebar() {
                     )
                 })}
             </nav>
-
-        </div>
+            <div className="p-4 border-t border-white/5">
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                    onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                >
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                </Button>
+            </div>
+        </div >
     );
 }

@@ -1,6 +1,39 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
+
+async function hashPassword(password: string) {
+    return await bcrypt.hash(password, 10)
+}
+
+async function seedAdmins() {
+    console.log('Seeding admins...')
+    const password = await hashPassword('securepassword123')
+
+    const admins = [
+        { email: 'admin@starapp.ai', name: 'Admin One', role: 'admin' },
+        { email: 'admin2@starapp.ai', name: 'Admin Two', role: 'admin' },
+        { email: 'admin3@starapp.ai', name: 'Admin Three', role: 'admin' },
+    ]
+
+    for (const admin of admins) {
+        const user = await prisma.user.upsert({
+            where: { email: admin.email },
+            update: {
+                role: 'admin',
+                password: password // Ensure password is set/updated
+            },
+            create: {
+                email: admin.email,
+                name: admin.name,
+                role: 'admin',
+                password: password,
+            },
+        })
+        console.log(`Upserted admin: ${user.email}`)
+    }
+}
 
 const PROJECTS = [
     {
@@ -57,6 +90,8 @@ const POSTS = [
 
 async function main() {
     console.log('Start seeding ...')
+
+    await seedAdmins()
 
     for (const project of PROJECTS) {
         const p = await prisma.project.upsert({

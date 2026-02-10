@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 
 export async function middleware(request: NextRequest) {
@@ -22,8 +23,23 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL("/admin", request.url));
         }
 
-        // Optional: Block non-admin routes if strict separation is desired
-        // For now, we allow them to view the site, but priority is Admin.
+        // Exclude specific paths from auth check to prevent infinite loops
+        const isAuthPage = pathname.startsWith("/auth") || pathname.startsWith("/api/auth") || pathname.startsWith("/_next") || pathname.includes("icon");
+
+        if (!isAuthPage) {
+            console.log(`[Middleware] Checking auth for: ${pathname}`);
+            const token = await getToken({
+                req: request,
+                secret: process.env.NEXTAUTH_SECRET
+            });
+            console.log(`[Middleware] Token found:`, !!token, token?.role);
+
+            if (!token || token.role !== 'admin') {
+                console.log(`[Middleware] Access denied. Redirecting to signin.`);
+                const signInUrl = new URL("/auth/signin", request.url);
+                return NextResponse.redirect(signInUrl);
+            }
+        }
     }
 
     // Continue with default behavior (auth check etc.)

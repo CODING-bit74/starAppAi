@@ -18,6 +18,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "StarApp.AI | AI & Blockchain SaaS Platform",
   description: "Enterprise-grade autonomous agents and blockchain solutions.",
+  icons: {
+    icon: '/Starappaibot.png',
+    shortcut: '/Starappaibot.png',
+    apple: '/Starappaibot.png',
+  },
 };
 
 export default function RootLayout({
