@@ -1,0 +1,28 @@
+[00:00:01.855] Server  WARN    ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:01.979] Server  LOG     ✓ Ready in 1767ms
+[00:00:08.783] Browser WARN    Image with src "/icon.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:00:08.783] Browser WARN    Image with src "/Starappaibot.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:00:12.898] Server  LOG     [Auth] Authorize called with: "admin@starapp.ai"
+[00:00:12.898] Server  LOG     [Auth] Credentials valid. Granting access.
+[00:00:12.929] Server  LOG     [Middleware] Checking auth for: /admin
+[00:00:12.934] Server  LOG     [Middleware] Token found: true admin
+[00:00:13.963] Server  LOG     [Middleware] Checking auth for: /admin
+[00:00:13.964] Server  LOG     [Middleware] Checking auth for: /admin
+[00:00:13.967] Server  LOG     [Middleware] Token found: true admin
+[00:00:13.968] Server  LOG     [Middleware] Token found: true admin
+[00:00:21.060] Server  LOG     [Middleware] Checking auth for: /admin/faqs
+[00:00:21.062] Server  LOG     [Middleware] Token found: true admin
+[00:00:22.023] Server  LOG     [Middleware] Checking auth for: /admin/faqs
+[00:00:22.025] Server  LOG     [Middleware] Token found: true admin
+[00:00:25.798] Server  LOG     [Middleware] Checking auth for: /admin
+[00:00:25.800] Server  LOG     [Middleware] Token found: true admin
+[00:00:29.471] Server  LOG     [Middleware] Checking auth for: /admin/settings
+[00:00:29.473] Server  LOG     [Middleware] Token found: true admin
+[00:00:30.149] Server  LOG     [Middleware] Checking auth for: /admin/settings
+[00:00:30.150] Server  LOG     [Middleware] Token found: true admin
+[00:00:35.440] Server  LOG     [Middleware] Checking auth for: /admin
+[00:00:35.442] Server  LOG     [Middleware] Token found: true admin
+[00:01:44.464] Server  LOG     [Middleware] Checking auth for: /admin
+[00:01:44.465] Server  LOG     [Middleware] Token found: true admin
+[00:01:52.775] Server  LOG     [Middleware] Checking auth for: /admin
+[00:01:52.776] Server  LOG     [Middleware] Token found: true admin

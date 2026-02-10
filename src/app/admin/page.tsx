@@ -1,7 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, FileText, Briefcase, Activity } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+    // Parallel data fetching
+    const [userCount, postCount, projectCount, systemStats] = await Promise.all([
+        prisma.user.count(),
+        prisma.post.count(),
+        prisma.project.count(),
+        prisma.systemStats.findFirst()
+    ]);
+
+    // Calculate post stats if needed, for now just total
+    const publishedPosts = await prisma.post.count({ where: { published: true } });
+    const draftPosts = postCount - publishedPosts;
+
     return (
         <div className="space-y-8">
             <div>
@@ -16,8 +29,8 @@ export default function AdminDashboardPage() {
                         <Users className="h-4 w-4 text-blue-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white">1,234</div>
-                        <p className="text-xs text-muted-foreground">+180 this month</p>
+                        <div className="text-2xl font-bold text-white">{userCount}</div>
+                        <p className="text-xs text-muted-foreground">Registered accounts</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
@@ -26,8 +39,8 @@ export default function AdminDashboardPage() {
                         <FileText className="h-4 w-4 text-green-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white">42</div>
-                        <p className="text-xs text-muted-foreground">12 published, 3 drafts</p>
+                        <div className="text-2xl font-bold text-white">{postCount}</div>
+                        <p className="text-xs text-muted-foreground">{publishedPosts} published, {draftPosts} drafts</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
@@ -36,7 +49,7 @@ export default function AdminDashboardPage() {
                         <Briefcase className="h-4 w-4 text-purple-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white">8</div>
+                        <div className="text-2xl font-bold text-white">{projectCount}</div>
                         <p className="text-xs text-muted-foreground">Active Portfolio Items</p>
                     </CardContent>
                 </Card>
@@ -46,7 +59,7 @@ export default function AdminDashboardPage() {
                         <Activity className="h-4 w-4 text-red-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white">99.9%</div>
+                        <div className="text-2xl font-bold text-white">{systemStats?.uptimeGuarantee || "99.9%"}</div>
                         <p className="text-xs text-muted-foreground">Uptime</p>
                     </CardContent>
                 </Card>
