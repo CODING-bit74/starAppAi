@@ -1,7 +1,12 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/auth/signin/page": "app/auth/signin/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/faqs/page": "app/admin/faqs/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/admin/docs/page": "app/admin/docs/page.js",
+  "/admin/docs/new/page": "app/admin/docs/new/page.js",
+  "/admin/leads/page": "app/admin/leads/page.js",
+  "/admin/posts/page": "app/admin/posts/page.js",
+  "/admin/services/page": "app/admin/services/page.js",
+  "/admin/solutions/page": "app/admin/solutions/page.js",
+  "/admin/chat/page": "app/admin/chat/page.js"
 }
